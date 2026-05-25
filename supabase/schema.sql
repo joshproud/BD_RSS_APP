@@ -89,3 +89,10 @@ alter table feed_sources disable row level security;
 alter table articles disable row level security;
 alter table classifications disable row level security;
 alter table article_tags disable row level security;
+
+-- New-format Supabase API keys (sb_publishable_*) don't auto-grant table privileges
+-- to the anon role the way legacy anon JWTs did. Grant read access explicitly so
+-- the publishable key can SELECT. Writes still go through the service role.
+grant usage on schema public to anon, authenticated;
+grant select on all tables in schema public to anon, authenticated;
+alter default privileges in schema public grant select on tables to anon, authenticated;
